@@ -15,3 +15,14 @@ Langchain Module
 
 
 Setup : Use anaconda to setup this environment : python_3_11_11_langchain_env.yaml    
+
+
+
+
+pdf to vector db embeddings :
+    /tools
+
+    Have local qdrant vector db running on docker
+        
+        cd /docker/qdrant
+        run docker-compose up -d 
