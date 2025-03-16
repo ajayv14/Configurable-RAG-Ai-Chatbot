@@ -2,6 +2,7 @@
 # pip install -U langchain-community
 
 
+
 # Load PDF
 
 from langchain_community.document_loaders import PyPDFLoader
@@ -20,40 +21,12 @@ docs = text_splitter.split_documents(documents)
 # Generate embeddings
 
 
-#############
+############
 ############
 
-# Custom class for titan based embedding client 
-
-import boto3
-import json
-from langchain.embeddings.base import Embeddings
-
-class BedrockTitanEmbeddings(Embeddings):
-    def __init__(self, model_id="amazon.titan-embed-text-v1", region_name="us-east-1"):
-        self.client = boto3.client("bedrock-runtime", region_name=region_name)
-        self.model_id = model_id
-
-    def embed_query(self, text: str):
-        """Generate an embedding for a single text query."""
-        response = self.client.invoke_model(
-            modelId=self.model_id,
-            body=json.dumps({"inputText": text}),
-        )
-        response_body = json.loads(response["body"].read())
-        return response_body["embedding"]
-
-    def embed_documents(self, texts):
-        """Generate embeddings for multiple documents."""
-        return [self.embed_query(text) for text in texts]
-
-
-
-
-#########
-#########
-
 #Generate  embeddings
+
+from bedrock_titan_embeddings import BedrockTitanEmbeddings
 
 # Initialize Titan embedding model
 titan_embeddings = BedrockTitanEmbeddings()
@@ -61,7 +34,7 @@ titan_embeddings = BedrockTitanEmbeddings()
 # Generate embeddings for document chunks
 embeddings = titan_embeddings.embed_documents([doc.page_content for doc in docs])
 
-########
+##########
 ######
 
 
