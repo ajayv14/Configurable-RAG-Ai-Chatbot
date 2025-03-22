@@ -37,6 +37,12 @@ embeddings = titan_embeddings.embed_documents([doc.page_content for doc in docs]
 ##########
 ######
 
+# Configs
+
+db_url = "localhost:6333"
+db_collection_name = "pdf_embeddings"
+
+#####
 
 # Save embeddings to db
 
@@ -44,17 +50,17 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance
 
 # Connect to Qdrant
-client = QdrantClient("localhost:6333")  # Use "localhost" if running Qdrant locally
+client = QdrantClient(db_url)  # Use "localhost" if running Qdrant locally
 
 # Create collection
 client.create_collection(
-    collection_name="pdf_embeddings",
+    collection_name=db_collection_name,
     vectors_config=VectorParams(size=1536, distance=Distance.COSINE),
 )
 
 # Insert embeddings into Qdrant
 for i, (doc, emb) in enumerate(zip(docs, embeddings)):
     client.upsert(
-        collection_name="pdf_embeddings",
+        collection_name=db_collection_name,
         points=[{"id": i, "vector": emb, "payload": {"text": doc.page_content}}],
     )
