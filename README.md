@@ -1,95 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configurable Chatbot AI</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        h1 {
-            color: #00698f;
-        }
-        h2 {
-            margin-top: 40px;
-        }
-        ul {
-            list-style: disc;
-            margin-left: 20px;
-        }
-        li {
-            margin-bottom: 10px;
-        }
-        a {
-            text-decoration: none;
-            color: #008000;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
-    <h1>Configurable Chatbot AI</h1>
-    <p>An easily customizable AI chatbot.</p>
+# Configurable Chatbot AI
 
-    <h2>Requirements</h2>
-    <ul>
-        <li>Model access: amazon.titan-embed-text-v1 for embeddings generation</li>
-        <li>Model foundation: amazon.titan-embed-text-v1</li>
-    </ul>
+An easily customizable AI chatbot.
 
-    <h2>Getting Started</h2>
+## Requirements
 
-    <h3>Step 0: Create Environment</h3>
-    <ol>
-        <li><a href="https://www.anaconda.com/download">Install Anaconda Platform</a></li>
-        <li>Import environment YAML: python_3_11_11_langchain_env.yaml</li>
-    </ol>
+- Model access: `amazon.titan-embed-text-v1` for embeddings generation  
+- Model foundation: `amazon.titan-embed-text-v1`  
 
-    <h3>Step 1: Setup Local DB and Optional PDF Data</h3>
-    <ol>
-        <li>Prerequisites: Docker engine</li>
-        <li>
-            Setup Qdrant Vector DB:
-            <ul>
-                <li>cd /docker/qdrant</li>
-                <li>docker-compose up -d</li>
-                <li>Access Qdrant UI: <a href="http://localhost:6333/dashboard">http://localhost:6333/dashboard</a></li>
-            </ul>
-        </li>
-        <li>
-            Optional: PDF to Vector DB Embeddings Generator:
-            <ul>
-                <li>Directory: /tools</li>
-                <li>Run: python pdf_embeddings_generator.py</li>
-                <li>Default configs:
-                    <ul>
-                        <li>db_url: "localhost:6333"</li>
-                        <li>db_collection_name: "pdf_embeddings"</li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-    </ol>
+## Getting Started
 
-    <h3>Step 2: Run Application Components</h3>
-    <ol>
-        <li>
-            Server: Flask server that calls underneath Langchain module
-            <ul>
-                <li>Run: python server/flask_server.py</li>
-            </ul>
-        </li>
-        <li>UI: React and Node.js-based simple chat window</li>
-        <li>Langchain Module: In progress</li>
-    </ol>
+### Step 0: Create Environment
 
-    <h2>Additional Features</h2>
+1. [Install Anaconda Platform](https://www.anaconda.com/download)  
+2. Import environment YAML: `python_3_11_11_langchain_env.yaml`  
 
-    <h3>Search/Query Vector DB</h3>
-    <p>search_query_embeddings.py: Provide search query inside the file</p>
-</body>
-</html>
+### Step 1: Setup Local DB and Optional PDF Data  
+
+1. **Prerequisites:** Docker engine  
+2. **Setup Qdrant Vector DB:**  
+   ```sh
+   cd /docker/qdrant
+   docker-compose up -d
+   ```
+   Access Qdrant UI: [http://localhost:6333/dashboard](http://localhost:6333/dashboard)  
+
+3. **Optional: PDF to Vector DB Embeddings Generator:**  
+   - Directory: `/tools`  
+   - Run:  
+     ```sh
+     python pdf_embeddings_generator.py
+     ```
+   - Default configs:  
+     ```yaml
+     db_url: "localhost:6333"
+     db_collection_name: "pdf_embeddings"
+     ```
+
+### Step 2: Run Application Components  
+
+1. **Server:** Flask server that calls the underlying Langchain module  
+   ```sh
+   python server/flask_server.py
+   ```
+2. **UI:** React and Node.js-based simple chat window  
+3. **Langchain Module:** In progress  
+
+## Additional Features  
+
+### Search/Query Vector DB  
+
+Run `search_query_embeddings.py` and provide search queries inside the file.  
