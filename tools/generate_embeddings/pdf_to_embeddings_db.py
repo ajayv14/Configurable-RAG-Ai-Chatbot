@@ -7,15 +7,21 @@ from langchain.vectorstores import FAISS
 from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct
 
+
+#pip install boto3
+#pip install PyPDF2
+#pip install langchain-community
+#pip install qdrant-client
+
 def extract_text_from_pdf(pdf_path):
     """Extracts text from a PDF file."""
     reader = PdfReader(pdf_path)
     text = "\n".join([page.extract_text() for page in reader.pages if page.extract_text()])
     return text
 
-def get_aws_titan_embedding(text, model_id):
+def get_aws_titan_embedding(text, model_id, region):
     """Generates embeddings using AWS Titan Embeddings model through LangChain."""
-    embeddings = BedrockEmbeddings(model_id=model_id)
+    embeddings = BedrockEmbeddings(model_id=model_id,region_name=region)
     return embeddings.embed_query(text)
 
 def save_to_qdrant(file_name, embedding, qdrant_url, qdrant_port):
@@ -28,7 +34,7 @@ def save_to_qdrant(file_name, embedding, qdrant_url, qdrant_port):
         points=[PointStruct(id=hash(file_name), vector=embedding, payload={"file": file_name})]
     )
 
-def process_pdfs(input_folder, output_folder, model_id, qdrant_url, qdrant_port):
+def process_pdfs(input_folder, output_folder, model_id, region, qdrant_url, qdrant_port):
     """Processes PDF files by extracting text, generating embeddings, and moving to output folder."""
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
@@ -39,7 +45,7 @@ def process_pdfs(input_folder, output_folder, model_id, qdrant_url, qdrant_port)
             print(f"Processing {file}...")
             
             text = extract_text_from_pdf(pdf_path)
-            embedding = get_aws_titan_embedding(text, model_id)
+            embedding = get_aws_titan_embedding(text, model_id,region)
             
             # Save embedding to JSON file
             embedding_path = os.path.join(output_folder, file.replace(".pdf", ".json"))
@@ -56,7 +62,8 @@ if __name__ == "__main__":
     INPUT_FOLDER = "pdf_input"
     OUTPUT_FOLDER = "pdf_dump"
     MODEL_ID = "amazon.titan-embed-text-v1"
+    REGION = "us-east-1"
     QDRANT_URL = "localhost"
     QDRANT_PORT = 6333
     
-    process_pdfs(INPUT_FOLDER, OUTPUT_FOLDER, MODEL_ID, QDRANT_URL, QDRANT_PORT)
+    process_pdfs(INPUT_FOLDER, OUTPUT_FOLDER, MODEL_ID, REGION, QDRANT_URL, QDRANT_PORT)
