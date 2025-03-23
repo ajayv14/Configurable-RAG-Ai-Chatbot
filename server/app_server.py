@@ -8,19 +8,21 @@ CORS(app)  # Enable CORS for all routes
 
 
 @app.route('/similarity_search_query', methods=['POST'])
-def query_endpoint():
-    """Handles chat queries and returns relevant documents."""
-    data = request.get_json()
+def query():
+    data = request.json
     query_text = data.get("query", "")
 
-    if not query_text:
-        return jsonify({"error": "Query text is required"}), 400
+    results = query_vector_db(query_text)
 
-    # Call the function to perform similarity search
-    relevant_docs = query_vector_db(query_text)
+    # Convert LangChain Document objects to JSON-serializable format
+    response_data = []
+    for doc in results:
+        response_data.append({
+            "content": doc.page_content,  # Extract text content
+            "metadata": doc.metadata      # Extract metadata (if needed)
+        })
 
-    return jsonify({"response": relevant_docs})
-
+    return jsonify({"response": response_data})
 
 
 

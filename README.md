@@ -9,6 +9,8 @@ An easily customizable AI chatbot.
 
 ## Getting Started
 
+**RAG Architecture**
+
 ### Step 0: AWS Access
 
 1. Request access to embedding and foundation models thro AWS Web UI.
@@ -19,6 +21,8 @@ An easily customizable AI chatbot.
 1. [Install Anaconda Platform](https://www.anaconda.com/download)  
 2. Create new environment with python 3.11.11 
 3. Activate env and install dependencies : pip install -r requirements.txt
+4. conda install -c conda-forge nodejs=14.2.0
+5. npm install react react-dom
 
 ### Step 2: Setup Local DB and Optional PDF Data  
 
@@ -48,10 +52,16 @@ An easily customizable AI chatbot.
 
 ### Step 4: Run Application Components  
  ###### Under development #############
+
+  Directory: `/server`
 1. **Server:** Flask server that calls the underlying Langchain module  
    ```sh
-   python server/flask_server.py
+   python server/app_server.py
    ```
 2. **UI:** React and Node.js-based simple chat window  
+npm install react react-dom bootstrap
+
+   npm install
+   npm start
 3. **Langchain Module:** In progress  
 
