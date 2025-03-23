@@ -8,6 +8,12 @@ from qdrant_client.models import PointStruct
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
+#pip install boto3
+#pip install PyPDF2
+#pip install langchain-community
+#pip install qdrant-client
+
+
 # Flag to ensure collection is checked and created only once
 collection_checked = False
 
@@ -50,13 +56,10 @@ def get_aws_titan_embedding(text, model_id, region):
     embeddings = BedrockEmbeddings(model_id=model_id, region_name=region)
     return embeddings.embed_query(text)
 
-def save_to_qdrant(file_name, embedding, page_content, qdrant_url, qdrant_port):
+def save_to_qdrant(file_name, embedding, page_content, qdrant_client, qdrant_collection):
     """Saves embeddings to Qdrant database after ensuring the collection exists."""
-    client = QdrantClient(qdrant_url, port=qdrant_port)
-    collection_name = "pdf_embeddings"
-    
     # Ensure the collection exists before inserting data
-    ensure_collection_exists(client, collection_name, len(embedding))
+    ensure_collection_exists(qdrant_client, qdrant_collection, len(embedding))
     
     # Generate a UUID for the point ID
     point_id = str(uuid.uuid4())
@@ -68,13 +71,13 @@ def save_to_qdrant(file_name, embedding, page_content, qdrant_url, qdrant_port):
     }
     
     # Upsert the embedding to the collection along with the payload
-    client.upsert(
-        collection_name=collection_name,
+    qdrant_client.upsert(
+        collection_name=qdrant_collection,
         points=[PointStruct(id=point_id, vector=embedding, payload=payload)]
     )
     print(f"Embedding for '{file_name}' inserted into the collection with page content.")
 
-def process_pdfs(input_folder, output_folder, model_id, qdrant_url, qdrant_port, chunk_size, chunk_overlap, region):
+def process_pdfs(input_folder, output_folder, model_id, qdrant_client, qdrant_collection, chunk_size, chunk_overlap, region):
     """Processes PDF files by extracting text, generating embeddings, and moving to output folder."""
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
@@ -93,8 +96,9 @@ def process_pdfs(input_folder, output_folder, model_id, qdrant_url, qdrant_port,
                 page_content = chunk  # The chunk content is the page content
                 
                 # Save embedding to Qdrant with page content as part of the payload
-                save_to_qdrant(f"{file}_chunk_{i}", embedding, page_content, qdrant_url, qdrant_port)
+                save_to_qdrant(f"{file}_chunk_{i}", embedding, page_content, qdrant_client, qdrant_collection)
 
+            # Move the original PDF to output folder
             os.rename(pdf_path, os.path.join(output_folder, file))
             print(f"Processed {file} and moved to {output_folder}")
 
@@ -107,5 +111,10 @@ if __name__ == "__main__":
     REGION = "us-east-1"  # Set your preferred AWS region here
     CHUNK_SIZE = 500
     CHUNK_OVERLAP = 50
+    COLLECTION_NAME = "pdf_embeddings"
 
-    process_pdfs(INPUT_FOLDER, OUTPUT_FOLDER, MODEL_ID, QDRANT_URL, QDRANT_PORT, CHUNK_SIZE, CHUNK_OVERLAP, REGION)
+    # Establish the Qdrant client connection once to be reused
+    qdrant_client = QdrantClient(QDRANT_URL, port=QDRANT_PORT)
+
+    # Process PDFs
+    process_pdfs(INPUT_FOLDER, OUTPUT_FOLDER, MODEL_ID, qdrant_client, COLLECTION_NAME, CHUNK_SIZE, CHUNK_OVERLAP, REGION)
