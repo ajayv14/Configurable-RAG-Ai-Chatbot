@@ -4,7 +4,7 @@ An easily customizable AI chatbot.
 
 ## High Level Design
 
-![HLD](static\RAG_hld.jpeg)
+![HLD](./static/RAG_hld.jpeg)
 
 ## Requirements
 
