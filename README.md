@@ -2,6 +2,10 @@
 
 An easily customizable AI chatbot.
 
+## High Level Design
+
+![HLD](static\RAG_hld.jpeg)
+
 ## Requirements
 
 - Model embedding: `amazon.titan-embed-text-v1` for embeddings generation  
